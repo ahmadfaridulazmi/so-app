@@ -7,7 +7,7 @@ const joi = require('joi'),
 exports.create = {
   schema: () => {
     return joi.object().keys({
-      user_id: joi.number().external(exists(User, 'user_id', 'id')),
+      user_id: joi.number().required().external(exists(User, 'user_id', 'id')),
       title: joi.string().required(),
       descriptions: joi.string().optional(),
     });
@@ -36,6 +36,7 @@ exports.all = {
 exports.update = {
   schema: () => {
     return joi.object().keys({
+      id: joi.number().required().external(exists(Order, 'order_id', 'id')),
       title: joi.string().optional(),
       descriptions: joi.string().optional(),
       status: joi.string().optional(),
