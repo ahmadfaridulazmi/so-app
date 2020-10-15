@@ -27,6 +27,7 @@ let config = {
     },
   },
   NODE_ENV: ENV_VARS.NODE_ENV || 'development',
+  PAYMENT_SERVICE_URL: ENV_VARS.PAYMENT_SERVICE_URL || 'http://localhost:4001',
   DEFAULT_ITEMS_PER_PAGE: 15,
   MAX_ITEMS_PER_PAGE: 50,
   VERSION: '1.0.0'

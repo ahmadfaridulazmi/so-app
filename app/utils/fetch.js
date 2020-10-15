@@ -1,8 +1,9 @@
-const axios = require('axios')
+const axios = require('axios'),
+    { PAYMENT_SERVICE_URL } = require('../../config')
 
 exports.fetch = async (path, { method = 'get', data = {}, params = {} } = {}) => {
   let response = await axios({
-    baseURL: 'http://localhost:4001',
+    baseURL: PAYMENT_SERVICE_URL,
     url: path,
     method,
     data,
