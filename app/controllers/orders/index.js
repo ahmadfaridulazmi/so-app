@@ -1,11 +1,24 @@
 const orderService = require('../../services/orders'),
+  userService = require('../../services/users'),
   orderSchema = require('../../schema/orders'),
   { DEFAULT_ITEMS_PER_PAGE } = require('../../../config'),
-  { validator } = require('../../schema/base');
+  { PAYMENT_STATUS, ORDER_STATUS } = require('../constant'),
+  { validator } = require('../../schema/base'),
+  { fetch }= require('../../utils/fetch')
 
 exports.create = async(req, res) => {
   await validator(orderSchema.create, req.body);
-  const order = await orderService.create(req.body);
+  let body = req.body
+  let { user_email } = req.body;
+  if (user_email) {
+    const user = await userService.findByEmail(user_email)
+    body['user_id'] = user.id
+    delete body.user_email
+  }
+  const order = await orderService.create(body);
+  const isPaid = await fetch('/api/payments', { method: 'post' })
+  const status = (isPaid.result === PAYMENT_STATUS.confirmed) ? ORDER_STATUS.delivered : ORDER_STATUS.cancelled
+  await orderService.update(order.id, { status: status, payment_at: new Date().toISOString() })
   res.status(201);
   return order;
 }
@@ -13,9 +26,9 @@ exports.create = async(req, res) => {
 exports.findById = async (req, res) => {
   const { id } = req.params;
   await validator(orderSchema.findById, { id });
-  let user = await orderService.findById(id);
+  let order = await orderService.findById(id);
   res.status(200);
-  return user;
+  return order;
 }
 
 exports.all = async (req, res) => {
@@ -39,8 +52,18 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
-  await validator(orderService.delete,{ id });
+  await validator(orderSchema.delete,{ id });
   await orderService.delete(id);
   res.status(204);
   return {};
+};
+
+exports.retry_payment = async (req, res) => {
+  const { id } = req.params;
+  await validator(orderSchema.findById,{ id });
+  const isPaid = await fetch('/api/payments', { method: 'post' })
+  const status = (isPaid.result === PAYMENT_STATUS.confirmed) ? ORDER_STATUS.delivered : ORDER_STATUS.cancelled
+  const order = await orderService.update(id, { status: status, payment_at: new Date().toISOString() })
+  res.status(200);
+  return order;
 };

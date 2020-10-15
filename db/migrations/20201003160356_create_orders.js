@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.text('descriptions')
     table.string('status');
     table.timestamp('created_at');
+    table.timestamp('payment_at');
     table.timestamp('deleted_at');
     table.timestamp('updated_at');
   });

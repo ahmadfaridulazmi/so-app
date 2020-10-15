@@ -1,6 +1,7 @@
 const userService = require('../../services/users'),
-  userSchema = require('../../schema/users'),
-  { validator } = require('../../schema/base');
+    userSchema = require('../../schema/users'),
+    { DEFAULT_ITEMS_PER_PAGE } = require('../../../config'),
+    { validator } = require('../../schema/base');
 
 exports.create = async(req, res) => {
   await validator(userSchema.create, req.body);
@@ -15,4 +16,16 @@ exports.findById = async (req, res) => {
   let user = await userService.findById(id);
   res.status(200);
   return user;
+}
+
+exports.all = async (req, res) => {
+  await validator(userSchema.all, req.query);
+  const { page = {}, filter = {} } = req.query;
+  const { email } = filter
+  const { number = 1, size = DEFAULT_ITEMS_PER_PAGE } = page;
+  let users = await userService.all({
+    number, size, email
+  });
+  res.status(200);
+  return users.results;
 }

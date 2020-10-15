@@ -9,6 +9,7 @@ router.get('/health', function(req, res, next) {
 // users
 const userController = require('../../app/controllers/users');
 router.get('/users/:id', controllerCallback(userController.findById))
+router.get('/users', controllerCallback(userController.all))
 router.post('/users', controllerCallback(userController.create))
 
 // orders
@@ -17,6 +18,8 @@ router.get('/orders', controllerCallback(orderController.all))
 router.post('/orders', controllerCallback(orderController.create))
 router.get('/orders/:id', controllerCallback(orderController.findById))
 router.post('/orders/:id', controllerCallback(orderController.update))
+router.post('/orders/:id/retry_payment', controllerCallback(orderController.retry_payment))
 router.delete('/orders/:id', controllerCallback(orderController.delete))
+
 
 module.exports = router;
