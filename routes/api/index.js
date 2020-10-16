@@ -19,6 +19,7 @@ router.post('/orders', controllerCallback(orderController.create))
 router.get('/orders/:id', controllerCallback(orderController.findById))
 router.post('/orders/:id', controllerCallback(orderController.update))
 router.post('/orders/:id/retry_payment', controllerCallback(orderController.retry_payment))
+router.get('/orders/:id/payment_logs', controllerCallback(orderController.payment_logs))
 router.delete('/orders/:id', controllerCallback(orderController.delete))
 
 

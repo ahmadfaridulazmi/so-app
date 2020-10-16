@@ -8,15 +8,15 @@ const orderService = require('../../services/orders'),
 
 exports.create = async(req, res) => {
   await validator(orderSchema.create, req.body);
-  let body = req.body
-  let { user_email } = req.body;
-  if (user_email) {
-    const user = await userService.findByEmail(user_email)
-    body['user_id'] = user.id
-    delete body.user_email
+  let { user_id } = req.body
+  let user = await userService.findById(user_id)
+  const order = await orderService.create(req.body);
+  const data = {
+    order_id: order.id,
+    user_id: user.id,
+    user_credentials: user.payment_credentials || {}
   }
-  const order = await orderService.create(body);
-  const isPaid = await fetch('/api/payments', { method: 'post' })
+  const isPaid = await fetch('/api/payments', { method: 'post', data })
   const status = (isPaid.result === PAYMENT_STATUS.confirmed) ? ORDER_STATUS.delivered : ORDER_STATUS.cancelled
   await orderService.update(order.id, { status: status, payment_at: new Date().toISOString() })
   res.status(201);
@@ -61,9 +61,24 @@ exports.delete = async (req, res) => {
 exports.retry_payment = async (req, res) => {
   const { id } = req.params;
   await validator(orderSchema.findById,{ id });
-  const isPaid = await fetch('/api/payments', { method: 'post' })
+  let order = await orderService.findById(id)
+  let user = await userService.findById(order.user_id)
+  const data = {
+    order_id: order.id,
+    user_id: user.id,
+    user_credentials: user.payment_credentials || {}
+  }
+  console.log('dataasda', data)
+  const isPaid = await fetch('/api/payments', { method: 'post', data })
   const status = (isPaid.result === PAYMENT_STATUS.confirmed) ? ORDER_STATUS.delivered : ORDER_STATUS.cancelled
-  const order = await orderService.update(id, { status: status, payment_at: new Date().toISOString() })
+  order = await orderService.update(id, { status: status, payment_at: new Date().toISOString() })
   res.status(200);
   return order;
+};
+
+exports.payment_logs = async (req, res) => {
+  const { id } = req.params;
+  const logs = await fetch('/api/payments', { params: { 'filter[order_id]': id } })
+  res.status(200);
+  return logs;
 };

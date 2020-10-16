@@ -8,7 +8,6 @@ exports.create = {
   schema: () => {
     return joi.object().keys({
       user_id: joi.number().external(exists(User, 'user_id', 'id')),
-      user_email: joi.string().optional(),
       title: joi.string().required(),
       descriptions: joi.string().optional(),
     });
