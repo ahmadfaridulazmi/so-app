@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', indexRouter);
 app.all('*', function (req, res) {
-  res.status(404).send('not found');
+    res.status(404).send('not found');
 });
 
 module.exports = app;
