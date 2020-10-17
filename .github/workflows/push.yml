@@ -34,6 +34,12 @@ jobs:
             ${{ runner.os }}-
 
       - name: npm install, build, and test
+        env:
+          DEV_DB_CLIENT: pg
+          DEV_DB_HOST: localhost
+          DEV_DB_NAME: sop-dev
+          DEV_DB_MIN_POOL: 5
+          DEV_DP_MAX_POOL: 10
         run: |
           # Build and test the project
           npm install
