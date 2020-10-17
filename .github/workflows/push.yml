@@ -46,4 +46,4 @@ jobs:
           # Build and test the project
           npm install
           npm run reset
-          npm run eslint .
+          npm run lint
