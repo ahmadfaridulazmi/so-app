@@ -42,9 +42,11 @@ jobs:
           DEV_DB_PASSWORD: postgres
           DEV_DB_MIN_POOL: 5
           DEV_DP_MAX_POOL: 10
+          NODE_AUTH_TOKEN: {{ secrets.GITHUB_TOKEN }}
         run: |
           # Build and test the project
           npm install
           npm run reset
           npm run lint
+
 
