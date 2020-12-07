@@ -9,6 +9,7 @@ exports.up = function(knex) {
         table.timestamp('created_at');
         table.timestamp('deleted_at');
         table.timestamp('updated_at');
+        //asdasd
     });
 };
 
